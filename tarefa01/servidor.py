@@ -29,7 +29,7 @@ def process_query(query):
             return ",".join([p.mountpoint for p in parts])  # lista de partições
         elif query == DISK_USAGE:
             usages = psutil.disk_partitions()
-            return ",".join([str(psutil.disk_usage(p.mountpoint).percent) for p in usages])  # Uso das partições
+            return ",".join([str(psutil.disk_usage(p.mountpoint).percent) for p in usages])  # uso das partições
         elif query == NET_IFACES:
             return ",".join(psutil.net_if_addrs().keys())  # lista de interfaces de rede
         elif query == NET_IPS:
@@ -43,23 +43,23 @@ def process_query(query):
                 for addr in iface if addr.family == psutil.AF_LINK
             ])  # lista de MACs
         elif query == NET_TXBYTES:
-            return str(psutil.net_io_counters().bytes_sent)  # Bytes enviados
+            return str(psutil.net_io_counters().bytes_sent)  # bytes enviados
         elif query == NET_RXBYTES:
-            return str(psutil.net_io_counters().bytes_recv)  # Bytes recebidos
+            return str(psutil.net_io_counters().bytes_recv)  # bytes recebidos
         elif query == NET_TXPACKS:
-            return str(psutil.net_io_counters().packets_sent)  # Pacotes enviados
+            return str(psutil.net_io_counters().packets_sent)  # pacotes enviados
         elif query == NET_RXPACKS:
-            return str(psutil.net_io_counters().packets_recv)  # Pacotes recebidos
+            return str(psutil.net_io_counters().packets_recv)  # pacotes recebidos
         elif query == NET_TCPCONS:
-            return str(len(psutil.net_connections(kind="tcp")))  # Conexões TCP
+            return str(len(psutil.net_connections(kind="tcp")))  # conexões TCP
         elif query == NET_TCPLIST:
-            return ",".join([str(c.laddr.port) for c in psutil.net_connections(kind="tcp")])  # Portas TCP
+            return ",".join([str(c.laddr.port) for c in psutil.net_connections(kind="tcp")])  # portas TCP
         elif query == NET_UDPCONS:
-            return str(len(psutil.net_connections(kind="udp")))  # Conexões UDP
+            return str(len(psutil.net_connections(kind="udp")))  # conexões UDP
         elif query == NET_UDPLIST:
-            return ",".join([str(c.laddr.port) for c in psutil.net_connections(kind="udp")])  # Portas UDP
+            return ",".join([str(c.laddr.port) for c in psutil.net_connections(kind="udp")])  # portas UDP
         else:
-            return None  # Consulta não suportada
+            return None  # consulta não suportada
     except Exception as e:
         return f"Erro: {str(e)}"
 
@@ -74,7 +74,7 @@ def run_server():
         packet = NSIPPacket()
         packet.from_packet(data)
 
-        # Verifica o checksum
+        # verifica o checksum
         if packet.checksum != checksum(data):
             response_packet = NSIPPacket(id=packet.id, type=NSIP_ERR, query=packet.query, result="Checksum inválido")
             sock.sendto(response_packet.to_packet(), address)
@@ -85,10 +85,10 @@ def run_server():
             result = process_query(query)
 
             if result is not None:
-                # Cria a resposta
+                # cria a resposta
                 response_packet = NSIPPacket(id=packet.id, type=NSIP_REP, query=query, result=result)
             else:
-                # Resposta para consulta não suportada
+                # resposta para consulta não suportada
                 response_packet = NSIPPacket(id=packet.id, type=NSIP_ERR, query=query, result="Consulta não suportada")
             
             response_packet.checksum = checksum(response_packet.to_packet())
