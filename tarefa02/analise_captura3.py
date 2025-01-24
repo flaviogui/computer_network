@@ -1,4 +1,5 @@
 from scapy.all import rdpcap
+from collections import Counter
 
 def analisar_captura3(arquivo_pcap1, arquivo_pcap2):
     packets1 = rdpcap(arquivo_pcap1)
